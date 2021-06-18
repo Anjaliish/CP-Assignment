@@ -1,5 +1,7 @@
 #include <stdio.h>
 
+//Program that takes an integer array as input and returns the maximum (largest) element of the array //
+
 int findmaxelement(int a[10])
 {   int max = a[0],i;
  
