@@ -1,3 +1,5 @@
+//Finding Compund intrest//
+
 #include <stdio.h>
 #include <math.h>
 
