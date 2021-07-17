@@ -1,0 +1,38 @@
+//Number guessing game, Computer will generate a random number and you and to guess the number untill you get right.//
+
+#include <stdio.h>
+#include <stdlib.h>
+#include<time.h>
+
+int main ()
+{
+  int random, count = 0, x, i, flag = 0;
+
+  printf ("Please guess the number between 1 and 100 \n");
+  srand (time (0));
+  random = rand () % 100;
+  for (i = 0; i < 5; i++)
+    {
+      scanf ("%d", &x);
+
+      if (x == random)
+	{
+	  printf ("You win. The number was %d", random);
+	  flag = 1;
+	  break;
+	}
+      else if (x > random)
+	{
+	  printf ("Please try a lower guess\n");
+	}
+      else
+	{
+	  printf ("Please try a higher guess\n");
+	}
+    }
+  if (flag == 0)
+    {
+      printf ("You lose. The number was %d", random);
+    }
+  return 0;
+}
