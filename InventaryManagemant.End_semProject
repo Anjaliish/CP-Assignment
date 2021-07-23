@@ -1,0 +1,220 @@
+   /* Store Management System Keep track of a store inventory. This includes, name of an item,
+      quantity and its price. The user can list, add or delete items. Use a file to store your data */
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct items
+{
+  char product_code[20];
+  char product_name[20];
+  int rate;
+  int quantity;
+} ITEM;
+
+ITEM item;
+
+void options ();
+void addProduct ();
+void display ();
+int isCodeAvailable (char code[]);
+void deleteRecord ();
+
+int
+main ()
+{
+  options ();
+  return 0;
+}
+
+int
+isCodeAvailable (char code[])
+{
+  FILE *file;
+  file = fopen ("Record.txt", "r");
+  while (!feof (file))
+    {
+      fread (&item, sizeof (item), 1, file);
+      if (strcmp (code, item.product_code) == 0)
+	{
+	  fclose (file);
+	  return 1;
+	}
+    }
+  fclose (file);
+  return 0;
+}
+
+void
+addProduct ()
+{
+  printf ("\v\v\t\t\t\t\t\t\tAdd Product\n");
+  printf ("\t\t\t\t\t\t----------------------------\n");
+  FILE *file;
+  char code[20];
+
+  int a;
+  file = fopen ("Record.txt", "a");
+
+  printf ("\n\t\t\t\t\tEnter Product code: ");
+  scanf ("%s", code);
+
+  int available;
+  available = isCodeAvailable (code);	// return 1 if code id found and return 0 if the code is not available.
+  if (available == 1)
+    {
+      system ("cls");
+      printf ("\n\v\t\t\t\t\t\t* Product is already there.\n");
+      options ();
+    }
+  strcpy (item.product_code, code);	// copy the code to the structure item
+
+  printf ("\n\t\t\t\t\tEnter Product Name: ");
+  scanf ("%s", item.product_name);
+
+  printf ("\n\t\t\t\t\tEnter Product Rate: ");
+  scanf ("%d", &item.rate);
+
+  printf ("\n\t\t\t\t\tEnter Quantity: ");
+  scanf ("%d", &item.quantity);
+
+  // writing structure to a file
+  fwrite (&item, sizeof (item), 1, file);
+  fclose (file);
+
+  return;
+
+}				// End of addproduct function
+
+
+void
+display ()			// INVENTORY RECORDS //
+{
+  printf ("\v\v\t\t\t\t\t***Available Products***\n");
+  FILE *file;
+  int count = 0;
+  file = fopen ("Record.txt", "r");
+  printf
+    ("\t\t--------------------------------------------------------------------\n");
+  printf ("\t\t\tCODE\t||\tNAME\t||\tRATE\t||\tQUANTITY\n");
+  printf
+    ("\t\t--------------------------------------------------------------------\n");
+  if (file == NULL)
+    {
+      printf ("\t\t\t\tNo Product is inserted.");
+      options ();
+    }
+  while (fread (&item, sizeof (item), 1, file))
+    {
+      printf ("\t\t\t %s\t||\t%s\t||\t %d \t||\t%d\n", item.product_code,
+	      item.product_name, item.rate, item.quantity);
+      count++;
+    }
+  if (count == 0)
+    {
+      system ("cls");
+      printf ("\n\v\t\t\t\t\t\t* Product is not available.\n");
+    }
+  fclose (file);
+
+  return;
+}				// End of display functions
+
+void
+deleteRecord ()
+{
+
+  FILE *file1, *file2;
+  char code[20], product[20];
+  int available;
+  file1 = fopen ("Record.txt", "rb");
+
+  display ();
+  printf ("\n\t\t\t\t\t\tEnter the Product code to delete: ");
+  scanf ("%s", code);
+  system ("cls");
+  available = isCodeAvailable (code);
+  if (available == 0)
+    {
+      system ("cls");
+
+      printf ("\n\v\t\t\t\t\t\t* Product is not available.\n");
+
+    }
+  else
+    {
+
+      file2 = fopen ("tempfile.txt", "wb");
+      while (fread (&item, sizeof (item), 1, file1))
+	{
+	  strcpy (product, item.product_code);
+	  if (strcmp (product, code) != 0)
+	    {
+	      fwrite (&item, sizeof (item), 1, file2);
+	    }
+	}
+      fclose (file1);
+      fclose (file2);
+      file1 = fopen ("Record.txt", "wb");
+      file2 = fopen ("tempfile.txt", "rb");
+      while (fread (&item, sizeof (item), 1, file2))
+	{
+	  fwrite (&item, sizeof (item), 1, file1);
+	}
+      printf ("\n\v\t\t\t\t\t\tProduct deleted successfully!!\n\n");
+      fclose (file1);
+      fclose (file2);
+    }
+
+  return;
+}
+
+void
+options ()
+{
+  int num = 0;
+  while (1)
+    {
+      printf ("\n\t***WELCOME TO INVENTORY*** \n");
+      printf ("\n\t\t 1. Insert");
+      printf ("\n\t\t 2. Display");
+      printf ("\n\t\t 3. Delete");
+      printf ("\n\t\t 4. Exit Program");
+      printf ("\n\t\t Enter your choice: ");
+      scanf ("%d", &num);
+
+      switch (num)
+	{
+	case 1:
+	  system ("cls");
+	  addProduct ();
+	  break;
+
+	case 2:
+	  system ("cls");
+	  display ();
+	  break;
+
+	case 3:
+	  system ("cls");
+	  deleteRecord ();
+	  break;
+
+	case 4:
+	  system ("cls");
+	  printf ("\n\t\t\t\t**You EXIT from INVENTORY**");
+	  exit (0);
+	  break;
+
+	default:
+	  system ("cls");
+	  printf ("Enter No. between 1-5");
+	  continue;
+	}
+
+    }
+  system ("cls");
+  return;
+}
